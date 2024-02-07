@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View,ImageBackground,Dimensions, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View,ImageBackground,Dimensions, Image, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import BG from '../assets/BG.png';
 import { EvilIcons, Entypo } from '@expo/vector-icons';
 import { useState } from 'react';
@@ -67,9 +67,87 @@ export default function WeatherScreen() {
              
         }
 
+    
+
+
+    <View style={{ flex: 1,alignItems: 'center', justifyContent: 'space-evenly'}}>
+
+          <Text style={{color: 'white',fontSize: 22, fontWeight: '700'}}> London, 
+             <Text style={{fontSize: 18, fontWeight: '400'}}>United Kingdom</Text>
+          </Text>
+        
+        <View style={{ justifyContent: 'center'}}>
+            <Image
+                source = {require('../assets/image/partlycloudy.png')}
+                style={{width: 200, height: 200,}}
+            />
+        </View>
+
+        <View style={{ alignItems: 'center'}}>
+            <Text style={{color: 'white', fontSize: 36, fontWeight: '700'}}>  
+              23&#176;
+            </Text>
+            <Text style={{color: 'white', fontSize: 22, letterSpacing: 0.5 }}>  
+              Partly Cloudy
+            </Text>
+        </View>
+
+
+        <View style={{flexDirection: 'row', justifyContent: 'space-around',width: '100%'}}>
+            <View style={{flexDirection: 'row', marginHorizontal: 2, alignItems: 'center'}}>
+                <Image
+                  source={require('../assets/icon/wind.png')} 
+                  style={{height: 20, width: 20,}}
+                />
+                <Text style={{color: 'white', fontSize: 16, fontWeight: '400'}}> 22km</Text>
+            </View>
+            <View style={{flexDirection: 'row', marginHorizontal: 2, alignItems: 'center'}}>
+                <Image
+                  source={require('../assets/icon/drop.png')} 
+                  style={{height: 20, width: 20,}}
+                />
+                <Text style={{color: 'white', fontSize: 16, fontWeight: '400'}}> 23%</Text>
+            </View>
+            <View style={{flexDirection: 'row', marginHorizontal: 2, alignItems: 'center'}}>
+                <Image
+                  source={require('../assets/icon/sun.png')} 
+                  style={{height: 20, width: 20,}}
+                />
+                <Text style={{color: 'white', fontSize: 16, fontWeight: '400'}}> 6:05 AM</Text>
+            </View>
+        </View>
+
+        <View style={{width: '100%', backgroundColor: 'red'}} >
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Entypo name="calendar" size={18} color="white" />
+                <Text style={{color: 'white' }}> Daily forecast</Text>
+            </View>
+
+            <ScrollView 
+               horizontal
+               contentContainerStyle={{paddingHorizontal: 15}}
+               showsHorizontalScrollIndicator={false}
+            >
+
+            
+             
+              <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', width: 70, marginHorizontal: 10, borderRadius: 20,backgroundColor: 'rgba(255, 255, 255, 0.4)', }}>
+
+                <Image
+                  source={require('../assets/image/heavyrain.png')}
+                  style={{width:50,height: 50}}
+                />
+                <Text style={{color: 'white'}}>Monday</Text>
+                <Text style={{color: 'white'}}>  23&#176;</Text>
+              </View>
+             
+
+            </ScrollView>
+        </View>
+
     </View>
        
-
+    </View>
     </ImageBackground> 
 
     
@@ -84,13 +162,13 @@ const styles = StyleSheet.create({
     top: 0,
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height + 100,
-    opacity: 0.9,
   }, 
   container: {
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
     marginHorizontal: 15,
+    marginBottom: 30,
   },
   serachBox: {
     width: '100%',
@@ -109,7 +187,6 @@ const styles = StyleSheet.create({
    color: 'white',
    width: '80%',
    fontSize: 18,
-   flex: 1,
   },
   searchIcon: {
    backgroundColor: 'red',
@@ -131,7 +208,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 15,
     paddingVertical: 7,
-    
   },
   textLocation: {
     fontSize: 18,
