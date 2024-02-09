@@ -2,22 +2,51 @@
 import { StyleSheet, Text, View,ImageBackground,Dimensions, Image, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import BG from '../assets/BG.png';
 import { EvilIcons, Entypo } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+import {debounce} from 'lodash';
+import { fetchLocations, fetchWeatherForecast } from '../api/weather';
+import { weatherImage } from '../constants';
 
-//https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
 
 export default function WeatherScreen() {
 
   const [showSearch, toggleSearch] = useState(false);
-  const [locations, setLocations] = useState([1,2,3]);
+  const [locations, setLocations] = useState([]);
+  const [weather, setWeather] = useState({});
+  
 
   const handleLocation = (loc) => {
+
     console.log ('location: ', loc);
+    
+    setLocations([]);
+    toggleSearch(false);
+      fetchWeatherForecast({
+        cityName: loc.name,
+        days: '7'
+      }).then(data => {
+        setWeather(data);
+        console.log('got forecat: ', data)
+      })
   }
+
+  const handleSearch = value => {
+  
+    if(value.length > 2){
+      fetchLocations({cityName: value}).then(data => {
+      setLocations(data);
+    })
+    }
+    
+  }
+  const handleTextDevounce = useCallback(debounce(handleSearch, 1200), []);
+
+  const {current, location} = weather;
+
 
   return (  
  
-    <ImageBackground source={BG}  resizeMode="cover" style={styles.bgImage}>
+    <ImageBackground source={BG}  resizeMode="cover" style={styles.bgImage} >
     
     <View style={styles.container}>
 
@@ -26,6 +55,7 @@ export default function WeatherScreen() {
           {
             showSearch ? (
                     <TextInput 
+                      onChangeText={handleTextDevounce}
                       placeholder = 'Search city' 
                       placeholderTextColor={'lightgray'} 
                       style={styles.serachInput}
@@ -51,12 +81,12 @@ export default function WeatherScreen() {
                 locations.map((loc, index) => {
                   return (
                    <TouchableOpacity
-                   onPress={() => handleLocation()}
+                   onPress={() => handleLocation(loc)}
                     key={index}
                     style={styles.locationItem}
                    >
                         <Entypo name="location-pin" size={22} color="gray" />
-                        <Text style={styles.textLocation}>London, United Kingdom</Text>
+                        <Text style={styles.textLocation}>{loc?.name}, {loc?.country}</Text>
                     </TouchableOpacity>
                   )
                 })
@@ -72,23 +102,24 @@ export default function WeatherScreen() {
 
     <View style={{ flex: 1,alignItems: 'center', justifyContent: 'space-evenly'}}>
 
-          <Text style={{color: 'white',fontSize: 22, fontWeight: '700'}}> London, 
-             <Text style={{fontSize: 18, fontWeight: '400'}}>United Kingdom</Text>
+          <Text style={{color: 'white',fontSize: 26, fontWeight: '700'}}> {location?.name}, 
+             <Text style={{fontSize: 20, fontWeight: '400'}}>{" " + location?.country}</Text>
           </Text>
         
         <View style={{ justifyContent: 'center'}}>
             <Image
-                source = {require('../assets/image/partlycloudy.png')}
+               
+                source = {weatherImage[current?.condition?.text]}
                 style={{width: 200, height: 200,}}
             />
         </View>
 
         <View style={{ alignItems: 'center'}}>
             <Text style={{color: 'white', fontSize: 36, fontWeight: '700'}}>  
-              23&#176;
+            {current?.temp_c}&#176;
             </Text>
             <Text style={{color: 'white', fontSize: 22, letterSpacing: 0.5 }}>  
-              Partly Cloudy
+            {current?.condition?.text}
             </Text>
         </View>
 
@@ -117,8 +148,8 @@ export default function WeatherScreen() {
             </View>
         </View>
 
-        <View style={{width: '100%', backgroundColor: 'red'}} >
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View style={{width: '100%', alignItems: 'flex-start'}} >
+            <View style={{flexDirection: 'row',  marginBottom: 10, marginLeft: 15,}}>
                 <Entypo name="calendar" size={18} color="white" />
                 <Text style={{color: 'white' }}> Daily forecast</Text>
             </View>
@@ -127,11 +158,12 @@ export default function WeatherScreen() {
                horizontal
                contentContainerStyle={{paddingHorizontal: 15}}
                showsHorizontalScrollIndicator={false}
+              
             >
 
             
              
-              <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', width: 70, marginHorizontal: 10, borderRadius: 20,backgroundColor: 'rgba(255, 255, 255, 0.4)', }}>
+              <View style={{ justifyContent: 'center', alignItems: 'center', width: 70, marginHorizontal: 10, padding: 5, borderRadius: 20,backgroundColor: 'rgba(255, 255, 255, 0.2)', }}>
 
                 <Image
                   source={require('../assets/image/heavyrain.png')}
@@ -141,6 +173,45 @@ export default function WeatherScreen() {
                 <Text style={{color: 'white'}}>  23&#176;</Text>
               </View>
              
+              <View style={{ justifyContent: 'center', alignItems: 'center', width: 70, marginHorizontal: 10, borderRadius: 20,backgroundColor: 'rgba(255, 255, 255, 0.4)', }}>
+
+<Image
+  source={require('../assets/image/heavyrain.png')}
+  style={{width:50,height: 50}}
+/>
+<Text style={{color: 'white'}}>Monday</Text>
+<Text style={{color: 'white'}}>  23&#176;</Text>
+</View>
+
+<View style={{ justifyContent: 'center', alignItems: 'center', width: 70, marginHorizontal: 10, borderRadius: 20,backgroundColor: 'rgba(255, 255, 255, 0.4)', }}>
+
+                <Image
+                  source={require('../assets/image/heavyrain.png')}
+                  style={{width:40,height: 50}}
+                />
+                <Text style={{color: 'white'}}>Monday</Text>
+                <Text style={{color: 'white'}}>  23&#176;</Text>
+              </View>
+
+              <View style={{ justifyContent: 'center', alignItems: 'center', width: 70, marginHorizontal: 10, borderRadius: 20,backgroundColor: 'rgba(255, 255, 255, 0.4)', }}>
+
+                <Image
+                  source={require('../assets/image/heavyrain.png')}
+                  style={{width:50,height: 50}}
+                />
+                <Text style={{color: 'white'}}>Monday</Text>
+                <Text style={{color: 'white'}}>  23&#176;</Text>
+              </View>
+
+              <View style={{ justifyContent: 'center', alignItems: 'center', width: 70, marginHorizontal: 10, borderRadius: 20,backgroundColor: 'rgba(255, 255, 255, 0.4)', }}>
+
+                <Image
+                  source={require('../assets/image/heavyrain.png')}
+                  style={{width:50,height: 50}}
+                />
+                <Text style={{color: 'white'}}>Monday</Text>
+                <Text style={{color: 'white'}}>  23&#176;</Text>
+              </View>
 
             </ScrollView>
         </View>
@@ -162,13 +233,14 @@ const styles = StyleSheet.create({
     top: 0,
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height + 100,
+    
   }, 
   container: {
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
     marginHorizontal: 15,
-    marginBottom: 30,
+    marginBottom: 50,
   },
   serachBox: {
     width: '100%',
